@@ -1,7 +1,6 @@
 import type { LoggerClientOptions, LoggerTransporter, LogLevel } from "./types";
 
 export class LoggerClient {
-  // #mountCount: number;
   defaultLogLevel: LogLevel;
   transporters: LoggerTransporter[];
   environment: string;
@@ -16,22 +15,7 @@ export class LoggerClient {
       ? transporters
       : [transporters];
     this.environment = environment;
-    // this.#mountCount = 0;
   }
-
-  // mount(): void {
-  //   this.#mountCount++;
-  //   if (this.#mountCount !== 1) return;
-
-  //   // TODO: Add logic for online manger;
-  // }
-
-  // unmount(): void {
-  //   this.#mountCount--;
-  //   if (this.#mountCount !== 0) return;
-
-  //   // TODO: Add logic for unmounting online manager;
-  // }
 
   sendLog(level: LogLevel, message: string): void {
     this.transporters.forEach((t) => t.log(level, message));
