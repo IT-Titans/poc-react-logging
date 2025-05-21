@@ -71,6 +71,7 @@ Das vorgeschlagene Logging-Konzept bietet React-Entwicklerteams eine maßgeschne
 - [x] Globales schreiben von logs in verschiedenen Komponenten
 - [x] Man kann an eine POST/PUT-Endpoint mit dem Body: `{level: 'info', message: 'xyz'}` Logs schicken.
 - [x] HttpTransporter läuft mit Basic Auth, theoretisch mit jeden anderen Auth auch möglich, geht über HTTP-Header
+- [ ] Logging im ErrorBoundary als ErrorBoundary Komponenten bereit stellen.
 - [ ] NextJS nicht getestet, könnte aber potenziell gehen, da `'use client'` in den wichtigen Komponenten sind
 - [ ] Sollte nochmal komplett durch getestet werden, samt angelegter test.
 - [ ] Eventuell als NPM Packages auslagern und als OpenSource anbieten.
