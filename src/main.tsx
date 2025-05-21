@@ -12,7 +12,7 @@ export const loggerClient = new LoggerClient({
   transporters: [
     new ConsoleTransporter(),
     new HttpTransporter("/api/logs", "POST", {
-      Authorization: "Basic" + " " + btoa("admin:geheim"),
+      Authorization: "Basic" + " " + btoa("admin:supersecret"),
     }),
   ],
 });

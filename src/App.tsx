@@ -39,12 +39,12 @@ export default function App() {
         >
           Debug
         </button>
-        <button
+        {/* <button
           className='bg-blue-400 rounded p-2'
           onClick={() => Promise.reject("Unerwarteter Fehler")}
         >
           Promise Rejection
-        </button>
+        </button> */}
       </div>
     </div>
   );

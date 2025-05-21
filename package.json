@@ -8,11 +8,15 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "start:backend": "node ./server/index.js",
     "test": "vitest",
     "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.7",
+    "@types/express": "^5.0.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.7"
