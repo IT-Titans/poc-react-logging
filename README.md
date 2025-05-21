@@ -74,7 +74,9 @@ Das vorgeschlagene Logging-Konzept bietet React-Entwicklerteams eine maßgeschne
 - [ ] Logging im ErrorBoundary als ErrorBoundary Komponenten bereit stellen.
 - [ ] NextJS nicht getestet, könnte aber potenziell gehen, da `'use client'` in den wichtigen Komponenten sind
 - [ ] Sollte nochmal komplett durch getestet werden, samt angelegter test.
-- [ ] Eventuell als NPM Packages auslagern und als OpenSource anbieten.
+- [ ] Optimierung der Typen von TypeScript
+- [ ] HttpTransporter eventuell async machen
+- [ ] Als NPM Packages auslagern und als OpenSource anbieten.
 
 ---
 
