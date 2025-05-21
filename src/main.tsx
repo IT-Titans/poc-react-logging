@@ -9,7 +9,12 @@ import { LoggerClientProvider } from "./providers/LoggerClientProvider.tsx";
 
 export const loggerClient = new LoggerClient({
   defaultLogLevel: "log",
-  transporters: [new ConsoleTransporter(), new HttpTransporter("/api/logs")],
+  transporters: [
+    new ConsoleTransporter(),
+    new HttpTransporter("/api/logs", "POST", {
+      Authorization: "Basic" + " " + btoa("admin:geheim"),
+    }),
+  ],
 });
 
 createRoot(document.getElementById("root")!).render(

@@ -33,26 +33,26 @@ export class LoggerClient {
   //   // TODO: Add logic for unmounting online manager;
   // }
 
-  sendLog(level: LogLevel, ...args: unknown[]): void {
-    this.transporters.forEach((t) => t.log(level, ...args));
+  sendLog(level: LogLevel, message: string): void {
+    this.transporters.forEach((t) => t.log(level, message));
   }
-  log(...args: unknown[]): void {
-    this.sendLog("log", ...args);
-  }
-
-  info(...args: unknown[]): void {
-    this.sendLog("info", ...args);
+  log(message: string): void {
+    this.sendLog("log", message);
   }
 
-  warn(...args: unknown[]): void {
-    this.sendLog("warn", ...args);
+  info(message: string): void {
+    this.sendLog("info", message);
   }
 
-  error(...args: unknown[]): void {
-    this.sendLog("error", ...args);
+  warn(message: string): void {
+    this.sendLog("warn", message);
   }
 
-  debug(...args: unknown[]): void {
-    this.sendLog("debug", ...args);
+  error(message: string): void {
+    this.sendLog("error", message);
+  }
+
+  debug(message: string): void {
+    this.sendLog("debug", message);
   }
 }

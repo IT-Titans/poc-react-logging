@@ -3,19 +3,25 @@ import type { LoggerTransporter, LogLevel } from "../types";
 export class HttpTransporter implements LoggerTransporter {
   url: string;
   method: "POST" | "PUT";
-  constructor(url: string, method: "POST" | "PUT" = "POST") {
+  headers: HeadersInit;
+  constructor(
+    url: string,
+    method: "POST" | "PUT" = "POST",
+    headers: HeadersInit = {}
+  ) {
     this.url = url;
     this.method = method;
+    this.headers = headers;
   }
 
-  log(level: LogLevel, ...args: unknown[]): void {
+  log(level: LogLevel, message: string): void {
     // Fire-and-forget, kein await
     fetch(this.url, {
       method: this.method,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...this.headers },
       body: JSON.stringify({
         level,
-        ...args,
+        message,
       }),
     }).catch((error) => {
       if (process.env.NODE_ENV === "development") {

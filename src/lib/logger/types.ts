@@ -1,7 +1,7 @@
 export type LogLevel = "log" | "debug" | "info" | "warn" | "error";
 
 export interface LoggerTransporter {
-  log: (level: LogLevel, ...args: unknown[]) => void;
+  log: (level: LogLevel, message: string) => void;
 }
 
 export interface LoggerClientOptions {
