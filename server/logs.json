@@ -1,0 +1,4 @@
+{"level":"log","message":"Standard log"}
+{"level":"info","message":"Info log"}
+{"level":"warn","message":"Warn log"}
+{"level":"error","message":"Error log"}

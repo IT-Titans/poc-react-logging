@@ -12,7 +12,14 @@ export const loggerClient = new LoggerClient({
   transporters: [
     new ConsoleTransporter(),
     new HttpTransporter("/api/logs", "POST", {
-      Authorization: "Basic" + " " + btoa("admin:supersecret"),
+      Authorization:
+        "Basic" +
+        " " +
+        btoa(
+          import.meta.env.VITE_LOGGER_USERNAME +
+            ":" +
+            import.meta.env.VITE_LOGGER_PASSWORD
+        ),
     }),
   ],
 });
