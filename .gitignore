@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Test Server Stuff
-sever/logs.json
+./sever/logs.json
