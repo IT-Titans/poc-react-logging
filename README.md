@@ -1,374 +1,114 @@
-# Konzeptpapier/POC für einen Browser-basierten Logging-Client für React-Anwendungen
+# poc-react-logging
 
-## 1. Einleitung
+A proof of concept for a small logging client that runs in the browser and is wired into React. A `LoggerClient` hands every log call to one or more transporters; the repository contains a console transporter, an HTTP transporter built on `fetch`, a React context provider and a `useLogger` hook. A demo page with five buttons and a local Express test server show the path from a click to a line in a log file. The code demonstrates the structure. It is not a library and not suitable for production use.
 
-Effizientes und aussagekräftiges Logging ist entscheidend für moderne Webanwendungen, um die Wartbarkeit, Fehlerbehebung und Benutzerfreundlichkeit sicherzustellen. Während WinstonJS im Node-Ökosystem eine bekannte und leistungsstarke Bibliothek für Logging darstellt, fehlt es an einer vergleichbaren Lösung, die speziell auf browserbasierte Anwendungen und insbesondere React optimiert ist. Dieses Konzeptpapier stellt eine maßgeschneiderte Lösung vor, die explizit für React-Anwendungen entwickelt wurde, vollständig im Browser lauffähig ist und dabei den bewährten, modularen Ansatz von WinstonJS adaptiert und weiter verbessert.
+**Status:** Frozen. The repository was brought to a final state and archived; it receives no further updates, including security updates. Last verified: 2026-11-13 with Node.js 24.15.0 and npm 11.12.1 on Windows 11. Verified were `npm ci`, `npm run build`, `npm run lint`, `npm test -- --run` and the quick start with both servers running: log entries posted through the Vite proxy were accepted and written to `server/logs.json`, and the demo page rendered in headless Microsoft Edge. Clicking the buttons in an interactive browser was not part of that verification.
 
-## 2. Aktuelle Situation
+## Prerequisites
 
-WinstonJS ist primär auf Node.js ausgerichtet und bietet keine vollständige Unterstützung für Browserumgebungen. Dies macht WinstonJS für Frontend-Anwendungen, insbesondere React-basierte Applikationen, ungeeignet. Frontend-Teams müssen daher oft auf Eigenentwicklungen oder einfache Konsolen-Logs zurückgreifen, was die Flexibilität und Skalierbarkeit beeinträchtigt.
+- Node.js 24 and npm 11. Older Node.js versions were not tested. The test server is started with `--env-file`, which exists from Node.js 20.6.
 
-## 3. Zielsetzung
+## Quick start
 
-Das Ziel dieses Konzeptes ist die Bereitstellung eines robusten, browserfähigen Logging-Clients, der:
+Run the commands in the repository root. They work in a POSIX shell and in PowerShell 7.
 
-- Modular aufgebaut ist und verschiedene Transport-Mechanismen unterstützt (Konsole, HTTP, eigene Implementierungen).
-- Einfach in React-Applikationen integrierbar ist und durch Hooks und Context optimal genutzt wird.
-- Paketiert und wiederverwendbar ist, sodass Entwicklerteams von einer einfachen Installation und Wartung profitieren.
+1. Install the dependencies from the lock file.
 
-## 4. Konzeptbeschreibung
+   ```sh
+   npm ci
+   ```
 
-Der entwickelte Proof-of-Concept (POC) umfasst mehrere Komponenten:
+2. Create the environment file from the demo defaults.
 
-### LoggerClient
+   ```sh
+   cp .env.example .env
+   ```
 
-- Eine zentrale Klasse, welche Konfigurationsoptionen und Transporter definiert.
-- Unterstützt mehrere Transporter parallel, z.B. Browser-Konsole und HTTP-Endpoints.
+3. Start the test server. It prints `Server running at http://localhost:3001` and keeps running.
 
-### LoggerClientProvider (React Context)
+   ```sh
+   npm run start:backend
+   ```
 
-- Stellt eine zentrale und global zugängliche Instanz des LoggerClients zur Verfügung.
-- Vereinfacht die Integration in bestehende React-Projekte.
+4. In a second terminal, start the demo page and open the URL Vite prints, <http://localhost:5173> by default.
 
-### Hooks: useLoggerClient und useLogger
+   ```sh
+   npm run dev
+   ```
 
-- `useLoggerClient()` ermöglicht Zugriff auf die LoggerClient-Instanz.
-- `useLogger()` stellt benutzerfreundliche Funktionen bereit (`logger.info()`, `logger.warn()`, etc.), welche den LoggerClient nutzen.
+5. Click the buttons. Each click writes one entry to the browser console, to the output of the test server and, as one JSON object per line, to `server/logs.json`.
 
-### Transporter
+## Configuration
 
-- Ein Interface (`Transporter`), das Entwicklern ermöglicht, individuelle Log-Transporter zu erstellen.
-- Zwei exemplarische Implementierungen:
+`.env` is read by Vite for the browser side and by the test server. The file is ignored by Git; `.env.example` holds the demo defaults.
 
-  - `ConsoleTransporter` für direkte Konsolenausgaben.
-  - `HttpTransporter`, welcher Logeinträge über native `fetch`-Requests an einen REST-Endpunkt sendet.
+| Variable | Demo default | Meaning |
+|---|---|---|
+| `VITE_LOGGER_USERNAME` | `admin` | User name for HTTP Basic authentication between demo page and test server |
+| `VITE_LOGGER_PASSWORD` | `supersecret` | Password for the same; see [Security](#security) for what it protects |
 
-## 5. Vorteile gegenüber WinstonJS
+Everything else is fixed in the code: the test server listens on port 3001 (`server/index.js`), the demo page posts to `/api/logs` (`src/main.tsx`), and the Vite development server forwards `/api` to the test server (`vite.config.ts`).
 
-- **Browser-Unterstützung:** Im Gegensatz zu WinstonJS, welches primär Node-basiert ist, unterstützt dieser Ansatz direkt browserbasierte Anwendungen vollständig.
-- **Modularität und Erweiterbarkeit:** Das einfache Interface ermöglicht die schnelle Erstellung eigener, projektspezifischer Transporter.
-- **Optimale Integration in React:** Durch Nutzung von Hooks und Context API bietet der Ansatz eine saubere, idiomatische Integration in React-Projekte.
-- **Leichtgewichtige Implementierung:** Der schlanke Ansatz reduziert Overhead und optimiert die Performance gegenüber Node-zentrierten Alternativen.
+## Tests
 
-## 6. Skalierbarkeit und Erweiterbarkeit
-
-Durch die einfache Architektur und das flexible Transporter-Interface ist der Logger hochgradig skalierbar. Neue Anforderungen, beispielsweise Logging an spezielle externe Dienste, lassen sich schnell und einfach implementieren. Zudem ermöglicht die Paketierung dieses Loggers als NPM-Package, dass er problemlos in verschiedenen Projekten wiederverwendet werden kann, was wiederum Wartungskosten reduziert.
-
-## 7. Einsatzmöglichkeiten
-
-- Allgemeines Debugging und Fehleranalyse im Entwicklungsmodus.
-- Tracking und Fehlerbehandlung in Produktionsumgebungen.
-- Monitoring und Reporting von Applikationsverhalten durch HTTP-Logging an zentrale Log-Aggregatoren.
-
-## 8. Fazit
-
-Das vorgeschlagene Logging-Konzept bietet React-Entwicklerteams eine maßgeschneiderte und flexible Logging-Lösung, die spezifisch für die Anforderungen browserbasierter Anwendungen entwickelt wurde. Die Erweiterbarkeit, leichte Integration und browser-native Unterstützung stellen eine signifikante Verbesserung gegenüber Node-basierten Lösungen wie WinstonJS dar. Durch Paketierung als eigenständiges Package bietet diese Lösung nachhaltige Vorteile hinsichtlich Wartbarkeit und Wiederverwendbarkeit.
-
----
-
-# Was geht
-
-- [x] Globales schreiben von logs in verschiedenen Komponenten
-- [x] Man kann an eine POST/PUT-Endpoint mit dem Body: `{level: 'info', message: 'xyz'}` Logs schicken.
-- [x] HttpTransporter läuft mit Basic Auth, theoretisch mit jeden anderen Auth auch möglich, geht über HTTP-Header
-- [ ] Logging im ErrorBoundary als ErrorBoundary Komponenten bereit stellen.
-- [ ] NextJS nicht getestet, könnte aber potenziell gehen, da `'use client'` in den wichtigen Komponenten sind
-- [ ] Sollte nochmal komplett durch getestet werden, samt angelegter test.
-- [ ] Optimierung der Typen von TypeScript
-- [ ] HttpTransporter eventuell async machen
-- [ ] Als NPM Packages auslagern und als OpenSource anbieten.
-
----
-
-# Setup in anderen Projekten
-
-In einem anderen React Porjekt muss aktuell folgende Datein händisch angelegt werden:
-
-1. `src/lib/logger/types.ts`:
-
-```ts
-export type LogLevel = "log" | "debug" | "info" | "warn" | "error";
-
-export interface LoggerTransporter {
-  log: (level: LogLevel, message: string) => void;
-}
-
-export interface LoggerClientOptions {
-  defaultLogLevel?: LogLevel;
-  transporters: LoggerTransporter[] | LoggerTransporter;
-  environment?: string;
-}
+```sh
+npm test -- --run
 ```
 
-2. `src/lib/logger/loggerClient.ts`:
+`npm test` without arguments starts Vitest in watch mode.
 
-```ts
-import type { LoggerClientOptions, LoggerTransporter, LogLevel } from "./types";
+At the last verification 15 of the 24 tests passed and 9 failed. The suite is kept as it was written:
 
-export class LoggerClient {
-  defaultLogLevel: LogLevel;
-  transporters: LoggerTransporter[];
-  environment: string;
+- Four tests still call the logger with several arguments. The API was reduced to a single message string in commit `ad0808d`, and these tests were not adjusted.
+- Four tests fail because of mistakes in the tests themselves: an undeclared variable, two assertions that compare a DOM element with a string, and a mock path that does not resolve.
+- One test, `should not fail if console[level] is not a function`, fails because of a defect in `ConsoleTransporter`: it checks that `console[level]` is truthy, not that it is a function.
 
-  constructor({
-    defaultLogLevel = "info",
-    transporters,
-    environment = "development",
-  }: LoggerClientOptions) {
-    this.defaultLogLevel = defaultLogLevel;
-    this.transporters = Array.isArray(transporters)
-      ? transporters
-      : [transporters];
-    this.environment = environment;
-  }
+For the same reason the test files are excluded from the type check in `npm run build`.
 
-  sendLog(level: LogLevel, message: string): void {
-    this.transporters.forEach((t) => t.log(level, message));
-  }
-  log(message: string): void {
-    this.sendLog("log", message);
-  }
+## How it works
 
-  info(message: string): void {
-    this.sendLog("info", message);
-  }
+- `src/lib/logger/types.ts` defines the transporter contract: one method, `log(level, message)`, with the levels `log`, `debug`, `info`, `warn` and `error`.
+- `src/lib/logger/loggerClient.ts` holds a list of transporters and passes each call to all of them.
+- `src/lib/logger/transporter/` contains the two transporters. `ConsoleTransporter` calls the matching `console` method. `HttpTransporter` sends `{ "level": ..., "message": ... }` with `POST` or `PUT` to a URL and accepts extra headers.
+- `src/providers/LoggerClientProvider.tsx` puts a client into a React context; `useLoggerClient` reads it.
+- `src/hooks/useLogger.ts` wraps the client in an object with one function per level.
 
-  warn(message: string): void {
-    this.sendLog("warn", message);
-  }
+To try the structure in another React project, copy `src/lib/logger`, `src/providers/LoggerClientProvider.tsx` and `src/hooks/useLogger.ts`, then create a client once and provide it at the root:
 
-  error(message: string): void {
-    this.sendLog("error", message);
-  }
-
-  debug(message: string): void {
-    this.sendLog("debug", message);
-  }
-}
-```
-
-3. Die Transporter müssen angelegt werden:
-
-- `consoleTransporter.ts`:
-
-```ts
-import type { LoggerTransporter, LogLevel } from "../types";
-
-export class ConsoleTransporter implements LoggerTransporter {
-  log(level: LogLevel, ...args: unknown[]): void {
-    if (console[level]) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (console[level] as any)(...args);
-    } else {
-      console.log(...args);
-    }
-  }
-}
-```
-
-- `src/lib/logger/transporter/httpTransporter.ts`:
-
-```ts
-import type { LoggerTransporter, LogLevel } from "../types";
-
-export class HttpTransporter implements LoggerTransporter {
-  url: string;
-  method: "POST" | "PUT";
-  headers: HeadersInit;
-  constructor(
-    url: string,
-    method: "POST" | "PUT" = "POST",
-    headers: HeadersInit = {}
-  ) {
-    this.url = url;
-    this.method = method;
-    this.headers = headers;
-  }
-
-  log(level: LogLevel, message: string): void {
-    // Fire-and-forget, kein await
-    fetch(this.url, {
-      method: this.method,
-      headers: { "Content-Type": "application/json", ...this.headers },
-      body: JSON.stringify({
-        level,
-        message,
-      }),
-    }).catch((error) => {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Error sending log to server:", error);
-      }
-    });
-  }
-}
-```
-
-4. `src/hooks/useLogger.ts`:
-
-```ts
-"use client";
-import { useLoggerClient } from "../providers/LoggerClientProvider";
-
-export function useLogger() {
-  const client = useLoggerClient();
-  return {
-    log: (message: string) => client.log(message),
-    info: (message: string) => client.info(message),
-    warn: (message: string) => client.warn(message),
-    error: (message: string) => client.error(message),
-    debug: (message: string) => client.debug(message),
-  };
-}
-```
-
-5. `src/providers/LoggerClientProvider.tsx`:
-
-```ts
-"use client";
-
-import React from "react";
-import type { LoggerClient } from "../lib/logger/loggerClient";
-
-export const LoggerClientContext = React.createContext<
-  LoggerClient | undefined
->(undefined);
-
-export const useLoggerClient = (loggerClient?: LoggerClient) => {
-  const client = React.useContext(LoggerClientContext);
-
-  if (loggerClient) {
-    return loggerClient;
-  }
-
-  if (!client) {
-    throw new Error(
-      "No LoggerClient set, use LoggerClientProvider to set one."
-    );
-  }
-  return client;
-};
-
-export type LoggerClientProviderProps = {
-  client: LoggerClient;
-  children: React.ReactNode;
-};
-
-export const LoggerClientProvider = ({
-  client,
-  children,
-}: LoggerClientProviderProps): React.JSX.Element => {
-  return (
-    <LoggerClientContext.Provider value={client}>
-      {children}
-    </LoggerClientContext.Provider>
-  );
-};
-```
-
----
-
-# Verwendung im Projekt
-
-1. In der `src/main.tsx`:
-
-```ts
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import App from "./App.tsx";
-import { LoggerClient } from "./lib/logger/loggerClient.ts";
-import { ConsoleTransporter } from "./lib/logger/transporter/consoleTransporter.ts";
-import { HttpTransporter } from "./lib/logger/transporter/httpTransporter.ts";
-import { LoggerClientProvider } from "./providers/LoggerClientProvider.tsx";
-
-export const loggerClient = new LoggerClient({
-  defaultLogLevel: "log",
-  transporters: [
-    new ConsoleTransporter(),
-    new HttpTransporter("/api/logs", "POST", {
-      Authorization:
-        "Basic" +
-        " " +
-        btoa(
-          import.meta.env.VITE_LOGGER_USERNAME +
-            ":" +
-            import.meta.env.VITE_LOGGER_PASSWORD
-        ),
-    }),
-  ],
+```tsx
+const loggerClient = new LoggerClient({
+  transporters: [new ConsoleTransporter(), new HttpTransporter("/api/logs")],
 });
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <LoggerClientProvider client={loggerClient}>
-      <App />
-    </LoggerClientProvider>
-  </StrictMode>
+  <LoggerClientProvider client={loggerClient}>
+    <App />
+  </LoggerClientProvider>
 );
 ```
 
-2. Es kann dann mittels dem `useLogger()` Hook verschiedenen Logs geschrieben werden, z.B.:
+Components then call `const logger = useLogger()` and `logger.info("message")`.
 
-```ts
-import { useLogger } from "./hooks/useLogger";
+## Known limitations
 
-export default function App() {
-  const logger = useLogger();
+- There is no level filter. `defaultLogLevel` and `environment` are stored by `LoggerClient` but never read, so every call reaches every transporter.
+- `HttpTransporter` sends one request per call and ignores the response status. A rejected request, for example a 401, goes unnoticed. There is no batching, no retry and no flush when the page is closed.
+- A log entry consists of level and message only: no timestamp, no context, no `Error` objects.
+- If a transporter throws, the transporters after it are skipped and the exception reaches the caller.
+- `useLogger` returns a new object on every render. Using it in a dependency array re-runs the effect each time.
+- There is no error boundary integration, the code was not tested with Next.js, and it is not packaged for npm.
 
-  return (
-    <div className='p-10 flex flex-col gap-2'>
-      <h1 className='text-3xl font-semibold'>Logger Test UI</h1>
-      <div className='flex gap-2 text-white'>
-        <button
-          className='bg-blue-400 rounded p-2'
-          type='button'
-          onClick={() => logger.log("Standard log")}
-        >
-          Log
-        </button>
-        <button
-          className='bg-blue-400 rounded p-2'
-          onClick={() => logger.info("Info log")}
-        >
-          Info
-        </button>
-        <button
-          className='bg-blue-400 rounded p-2'
-          onClick={() => logger.warn("Warn log")}
-        >
-          Warn
-        </button>
-        <button
-          className='bg-blue-400 rounded p-2'
-          onClick={() => logger.error("Error log")}
-        >
-          Error
-        </button>
-        <button
-          className='bg-blue-400 rounded p-2'
-          onClick={() => logger.debug("Debug log")}
-        >
-          Debug
-        </button>
-        {/* <button
-          className='bg-blue-400 rounded p-2'
-          onClick={() => Promise.reject("Unerwarteter Fehler")}
-        >
-          Promise Rejection
-        </button> */}
-      </div>
-    </div>
-  );
-}
-```
+The first version of this README was a concept paper in German. It remains available in the history, at commit `1bbfcc1`.
 
----
+## Origin of the material
 
-# Dev Setup
+The project scaffold comes from the `react-ts` template of [create-vite](https://github.com/vitejs/vite/tree/main/packages/create-vite) (MIT): the TypeScript and ESLint configuration, `index.html`, `src/vite-env.d.ts`, and the Vite and React logos in `public/` and `src/assets/`. The logos are trademarks of their owners.
 
-1. Klonen des repository.
-2. `npm install` ausführen.
-3. in der `.env` den Admin und Username hinterlegen. Für die enthaltene Test API ist der User Name: `admin` und das Password: `supersecret`
-4. Frontend mit `npm run dev` starten.
-5. Backend Test Api mit `npm run start:server` starten.
-6. Anschlisend kann auf der Website die einzelnen Logs in der Console und im API Log gesehen werden. Des weiteren wird der Log auch in die Datei `/server/logs.json` geschrieben.
+## Security
+
+- **The password is not a secret.** Vite replaces every `VITE_*` variable with its value at build time. After `npm run build` the built JavaScript contains the literal `btoa("admin:supersecret")`, and during development the values are served with `src/main.tsx`. Everyone who can load the page can read user name and password. The Basic authentication in this demo therefore only shows how a header travels through the transporter; it does not restrict who can write logs. Do not use this pattern with a real credential. A browser cannot keep a shared long-lived credential; send logs to an endpoint on the same origin and let a server-side proxy authenticate against the log store, or use short-lived tokens bound to the signed-in user.
+- **The test server is for local use only.** It allows requests from every origin, listens on all network interfaces and appends to `server/logs.json` without a size limit.
+- **Log messages leave the browser unfiltered.** There is no redaction of personal data or tokens.
+- **The repository is frozen.** At the time of freezing `npm audit` reported no high or critical advisories and seven moderate ones, all in development tooling (`minimatch` below `typescript-eslint`). Later advisories will not be addressed here.
+
+To report a security concern, see the [security policy](https://github.com/IT-Titans/poc-react-logging/security/policy).
