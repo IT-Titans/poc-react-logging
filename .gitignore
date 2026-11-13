@@ -25,3 +25,6 @@ dist-ssr
 
 # Test Server Stuff
 ./sever/logs.json
+
+# Local environment file, created from .env.example
+.env
