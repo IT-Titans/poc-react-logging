@@ -112,3 +112,9 @@ The project scaffold comes from the `react-ts` template of [create-vite](https:/
 - **The repository is frozen.** At the time of freezing `npm audit` reported no high or critical advisories and seven moderate ones, all in development tooling (`minimatch` below `typescript-eslint`). Later advisories will not be addressed here.
 
 To report a security concern, see the [security policy](https://github.com/IT-Titans/poc-react-logging/security/policy).
+
+## License
+
+Copyright 2025 IT Titans GmbH
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
