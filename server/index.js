@@ -48,16 +48,16 @@ const auth = (req, res, next) => {
 
 app.post("/api/logs", auth, (req, res) => {
   const logEntry = req.body;
-  console.log("Log-Eintrag:", logEntry);
+  console.log("Log entry:", logEntry);
   fs.appendFile(LOG_FILE, JSON.stringify(logEntry) + "\n", (err) => {
     if (err) {
-      res.status(500).json({ message: "Fehler beim Schreiben." });
+      res.status(500).json({ message: "Failed to write the log." });
     } else {
-      res.json({ message: "Log gespeichert." });
+      res.json({ message: "Log saved." });
     }
   });
 });
 
 app.listen(3001, () => {
-  console.log("Server läuft auf http://localhost:3001");
+  console.log("Server running at http://localhost:3001");
 });

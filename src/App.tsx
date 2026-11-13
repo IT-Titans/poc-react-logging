@@ -1,4 +1,4 @@
-// Datei: src/App.tsx
+// File: src/App.tsx
 import { useLogger } from "./hooks/useLogger";
 
 export default function App() {
@@ -41,7 +41,7 @@ export default function App() {
         </button>
         {/* <button
           className='bg-blue-400 rounded p-2'
-          onClick={() => Promise.reject("Unerwarteter Fehler")}
+          onClick={() => Promise.reject("Unexpected error")}
         >
           Promise Rejection
         </button> */}

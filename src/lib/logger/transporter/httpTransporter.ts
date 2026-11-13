@@ -15,7 +15,7 @@ export class HttpTransporter implements LoggerTransporter {
   }
 
   log(level: LogLevel, message: string): void {
-    // Fire-and-forget, kein await
+    // Fire-and-forget, no await
     fetch(this.url, {
       method: this.method,
       headers: { "Content-Type": "application/json", ...this.headers },

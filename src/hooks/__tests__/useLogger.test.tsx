@@ -10,7 +10,7 @@ const mockLoggerClient = {
   debug: vi.fn(),
 };
 
-// Mock der useLoggerClient-Funktion
+// Mock of the useLoggerClient function
 vi.mock("../providers/LoggerClientProvider", () => ({
   useLoggerClient: () => mockLoggerClient,
 }));
@@ -27,7 +27,7 @@ describe("useLogger", () => {
       result.current.debug("debug message");
     });
 
-    // Überprüfen, ob die gemockten Methoden korrekt aufgerufen wurden
+    // Check that the mocked methods were called correctly
     expect(mockLoggerClient.log).toHaveBeenCalledWith("log message");
     expect(mockLoggerClient.info).toHaveBeenCalledWith("info message");
     expect(mockLoggerClient.warn).toHaveBeenCalledWith("warn message");
