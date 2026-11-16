@@ -24,4 +24,7 @@ dist-ssr
 *.sw?
 
 # Test Server Stuff
-./sever/logs.json
+server/logs.json
+
+# Local environment file, created from .env.example
+.env

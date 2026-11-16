@@ -1,6 +1,6 @@
 // ConsoleTransporter.test.ts
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { ConsoleTransporter } from "../consoleTransporter"; // Pfad ggf. anpassen
+import { ConsoleTransporter } from "../consoleTransporter"; // adjust the path if needed
 import type { LogLevel } from "../../types";
 
 describe("ConsoleTransporter", () => {
@@ -50,7 +50,7 @@ describe("ConsoleTransporter", () => {
   });
 
   it("should not fail if console[level] is not a function", () => {
-    // z.B. console.debug zu Wert machen
+    // e.g. turn console.debug into a plain value
     // @ts-expect-error normally you cant pass an number to console.debug
     console.debug = 123;
     const transporter = new ConsoleTransporter();

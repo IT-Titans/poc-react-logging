@@ -99,9 +99,9 @@ describe("LoggerClient", () => {
       transporters: [badTransporter, transporter1],
     });
 
-    // Sollte nicht crashen, auch wenn einer fehlschlägt (es sei denn, du willst explizit anderes Verhalten)
-    expect(() => client.info("x")).toThrow(); // Aktuell wird durchgereicht!
-    // Falls du try/catch in sendLog möchtest, dann passe den Test an: dann sollte es eben **nicht** throwen.
+    // Should not crash even if one transporter fails (unless you explicitly want different behaviour)
+    expect(() => client.info("x")).toThrow(); // Currently the error is passed through!
+    // If you want try/catch in sendLog, adjust the test: then it should **not** throw.
   });
 
   it("should handle empty transporters array", () => {

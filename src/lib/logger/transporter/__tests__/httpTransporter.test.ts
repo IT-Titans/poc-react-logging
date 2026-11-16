@@ -1,8 +1,8 @@
 // HttpTransporter.test.ts
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { HttpTransporter } from "../httpTransporter"; // Pfad ggf. anpassen
+import { HttpTransporter } from "../httpTransporter"; // adjust the path if needed
 
-type LogLevel = "info" | "warn" | "error" | "debug" | "trace"; // Ggf. importieren
+type LogLevel = "info" | "warn" | "error" | "debug" | "trace"; // import it if needed
 
 describe("HttpTransporter", () => {
   const url = "https://example.com/log";
@@ -75,7 +75,7 @@ describe("HttpTransporter", () => {
 
     const body = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(body.level).toBe("debug");
-    // args sollten fehlen
+    // args should be missing
     expect(Object.keys(body)).toEqual(["level"]);
   });
 
@@ -89,7 +89,7 @@ describe("HttpTransporter", () => {
     process.env.NODE_ENV = "production";
     transporter.log("info", "fail");
 
-    // Fehler sollte NICHT geloggt werden
+    // The error should NOT be logged
     await new Promise((r) => setTimeout(r, 10)); // Fire-and-forget
     expect(errorSpy).not.toHaveBeenCalled();
   });
@@ -128,7 +128,7 @@ describe("HttpTransporter", () => {
   });
 
   it("should throw if invalid HTTP method is passed", () => {
-    expect(() => new HttpTransporter(url, "DELETE")).not.toThrow(); // Konstruktor lässt alles durch, aber das ist Design
-    // fetch wird nie mit DELETE aufgerufen
+    expect(() => new HttpTransporter(url, "DELETE")).not.toThrow(); // the constructor lets everything through, but that is by design
+    // fetch is never called with DELETE
   });
 });
